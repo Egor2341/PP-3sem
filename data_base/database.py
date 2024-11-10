@@ -3,10 +3,10 @@ from typing import Annotated
 
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, mapped_column, Mapped
 from sqlalchemy import create_engine, text, Integer
-from data_base.config import settings
+from app.config import get_db_url
 
 engine = create_engine(
-    url=settings.DATABASE_URL_psycopg,
+    url=get_db_url(),
     pool_pre_ping=True,
     echo=True,
 
