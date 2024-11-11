@@ -7,8 +7,8 @@ from decimal import Decimal
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from data_base.users import Users
-    from data_base.tours import Tours
+    from data_base.users import User
+    from data_base.tours import Tour
 
 
 class Status(enum.Enum):
@@ -17,14 +17,14 @@ class Status(enum.Enum):
     cancelled = "cancelled"
 
 
-class Bookings(Base):
+class Booking(Base):
     __tablename__ = "bookings"
 
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-    user: Mapped["Users"] = relationship(back_populates="booking")
-    tour_id: Mapped[int] = mapped_column(Integer, ForeignKey("tours.id"))
-    tour: Mapped["Tours"] = relationship(back_populates="booking")
     number_of_people: Mapped[int]
     total_price: Mapped[Decimal] = mapped_column(Numeric(8, 2))
     status: Mapped[Status]
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    tour_id: Mapped[int] = mapped_column(Integer, ForeignKey("tours.id"))
+    user: Mapped["User"] = relationship(back_populates="booking")
+    tour: Mapped["Tour"] = relationship(back_populates="booking")
 

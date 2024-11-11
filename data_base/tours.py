@@ -7,8 +7,8 @@ from decimal import Decimal
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from all_models import Bookings, Reviews
-class Tours(Base):
+    from all_models import Booking, Review
+class Tour(Base):
     __tablename__ = "tours"
 
     title: Mapped[str] = mapped_column(String(64))
@@ -19,5 +19,5 @@ class Tours(Base):
     end: Mapped[datetime.datetime]
     destination: Mapped[str] = mapped_column(String(64))
     availability: Mapped[int]
-    booking: Mapped["Bookings"] = relationship(uselist=False, back_populates="tour")
-    review: Mapped["Reviews"] = relationship(uselist=False, back_populates="tour")
+    booking: Mapped["Booking"] = relationship(uselist=False, back_populates="tour")
+    review: Mapped["Review"] = relationship(uselist=False, back_populates="tour")
