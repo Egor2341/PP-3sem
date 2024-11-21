@@ -14,11 +14,14 @@ engine = create_engine(
 
 session_factory = sessionmaker(engine)
 
+intpk = Annotated[int, mapped_column(primary_key=True)]
 created_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
 updated_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"),
                                                         onupdate=datetime.datetime.utcnow)]
 
 
 class Base(DeclarativeBase):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    created_at: Mapped[datetime.datetime]
+    __abstract__ = True
+
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
