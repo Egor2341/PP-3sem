@@ -4,9 +4,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from db.database import Base, intpk
 
 
-
-
-
 class User(Base):
     __tablename__ = "users"
 
@@ -18,6 +15,7 @@ class User(Base):
     role: Mapped[String] = mapped_column(String(10))
     booking: Mapped[list["Booking"]] = relationship(back_populates="user", cascade="all, delete")
     review: Mapped[list["Review"]] = relationship(back_populates="user", cascade="all, delete")
+
 
 from db.bookings import Booking
 from db.reviews import Review

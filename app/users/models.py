@@ -12,4 +12,8 @@ class UserRegisterModel(BaseModel):
     password: str = Field(..., min_length=8, max_length=50, description="Пароль, от 8 до 50 знаков")
     role: Role = Field(default=Role.client, description="Роль пользователя")
 
+class UserAuthModel(BaseModel):
+    email: EmailStr = Field(..., description="Электронная почта")
+    password: str = Field(..., min_length=6, max_length=50, description="Пароль, от 6 до 50 знаков")
+
 
