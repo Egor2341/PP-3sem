@@ -10,9 +10,9 @@ class Tour(Base):
     __tablename__ = "tours"
 
     id: Mapped[intpk]
-    title: Mapped[str] = mapped_column(String(64))
+    title: Mapped[str] = mapped_column(String(64), unique=True)
     description: Mapped[str] = mapped_column(Text)
-    price: Mapped[Decimal] = mapped_column(Numeric(7, 2))
+    price: Mapped[Decimal] = mapped_column(Numeric(8, 2))
     duration: Mapped[int]
     start: Mapped[datetime.datetime]
     end: Mapped[datetime.datetime]

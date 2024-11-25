@@ -1,3 +1,5 @@
-from db.db_init import create_tables
+import datetime
 
-create_tables()
+data = [('Ivan', 'Ivanov', 'ivan@example.com')]
+users = list(map(lambda obj: {"name": obj[0], "surname": obj[1], "email": obj[2]}, data))
+print(users)
