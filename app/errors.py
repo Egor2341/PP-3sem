@@ -18,3 +18,7 @@ def invalid_token():
 def access_is_denied():
     return HTTPException(status_code=403,
                          detail="Not enough rights")
+
+def tour_is_unavailable():
+    return HTTPException(status_code=404,
+                         detail="Tour is unavailable")

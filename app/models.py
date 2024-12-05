@@ -32,3 +32,10 @@ class TourModel(BaseModel):
     end: datetime.datetime = Field(..., description="Дата окончания")
     destination: str = Field(..., min_length=3, max_length=64, description="Место назначения")
     availability: int = Field(..., description="Количество доступных мест")
+
+class BookModel(BaseModel):
+    tour: str = Field(..., min_length=8, max_length=64, description="Название тура, от 8 до 64 символов")
+    user: EmailStr = Field(..., description="Электронная почта")
+    number_of_people: int = Field(..., description="Количество человек")
+    total_price: Decimal = Field(..., description="Общая стоимость")
+    status: str = Field(..., description="Статус бронрования")

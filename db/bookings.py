@@ -10,7 +10,7 @@ class Booking(Base):
     id: Mapped[intpk]
     number_of_people: Mapped[int]
     total_price: Mapped[Decimal] = mapped_column(Numeric(9, 2))
-    status: Mapped[String] = mapped_column(String(9))
+    status: Mapped[String] = mapped_column(String(15))
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     tour_id: Mapped[int] = mapped_column(Integer, ForeignKey("tours.id"))
     user: Mapped["User"] = relationship(back_populates="booking")

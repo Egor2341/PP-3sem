@@ -50,6 +50,30 @@ def remove_user(email_for_delete: EmailStr, user_data: User = Depends(get_curren
     service.delete_user(email_for_delete)
 
 
+@router.post("/add_booking/", status_code=200)
+def add_booking(number_of_people: int, tour_title: str, user_data: User = Depends(get_current_user)):
+    tour = service.get_tour_by_title(tour_title)
+    if tour is None or tour.availability < number_of_people:
+        raise errors.tour_is_unavailable()
+    booking_data = {}
+    booking_data["number_of_people"] = number_of_people
+    booking_data["total_price"] = tour.price * number_of_people
+    booking_data["status"] = "unconfirmed"
+    booking_data["user_id"] = user_data.id
+    booking_data["tour_id"] = tour.id
+    print(booking_data)
+    service.add_booking(booking_data)
+
+
+@router.get("/all_bookings/", status_code=200)
+def all_bookings(user_data: User = Depends(get_current_admin_user)) -> List[models.BookModel]:
+    bookings = list(
+        map(lambda b: {"tour": service.get_tour_by_id(b.tour_id).title, "user": service.get_user_by_id(b.user_id).email,
+                       "number_of_people": b.number_of_people, "total_price": b.total_price, "status": b.status},
+            service.get_bookings()))
+    return parse_obj_as(List[models.BookModel], bookings)
+
+
 @router.post("/add_tour/", status_code=200)
 def add_tour(tour_data: models.TourModel, user: User = Depends(get_current_admin_user)):
     tour = service.get_tour_by_title(tour_data.title)
