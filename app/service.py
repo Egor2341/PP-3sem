@@ -1,3 +1,4 @@
+from _decimal import Decimal
 from pydantic import EmailStr
 
 from db.database import session_factory
@@ -23,6 +24,12 @@ def add_new_user(data: dict):
 
 def get_users(user_id: int):
     with session_factory() as session:
+        # my_query = session.query(
+        #
+        # )
+        # if my_parsm_1 is not None:
+        #     my_query = my_query.filter()
+        # return my_query.all()
         return session.query(User.name, User.surname, User.email).filter(User.id != user_id).all()
 
 
@@ -47,3 +54,32 @@ def add_new_tour(data: dict):
 def get_tours():
     with session_factory() as session:
         return session.query(Tour).all()
+
+
+def update_tour(title: str, update_data: dict):
+    with session_factory() as session:
+        session.query(Tour).filter_by(title=title).update(update_data)
+        session.commit()
+
+
+def delete_tour(title: str):
+    with session_factory() as session:
+        tour = session.query(Tour).filter_by(title=title).first()
+        session.delete(tour)
+        session.commit()
+
+
+def get_filtered_tours(title: str, price: Decimal, duration: int, destination: str, number_of_peoples: int):
+    with session_factory() as session:
+        tours = session.query(Tour)
+        if title is not None:
+            tours = tours.filter(Tour.title.like(title.lower()))
+        if price is not None:
+            tours = tours.filter(Tour.price <= price)
+        if duration is not None:
+            tours = tours.filter_by(duration=duration)
+        if destination is not None:
+            tours = tours.filter_by(destination=destination.lower())
+        if number_of_peoples is not None:
+            tours = tours.filter(Tour.availability <= number_of_peoples)
+        return tours.all()

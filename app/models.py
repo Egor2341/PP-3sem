@@ -32,6 +32,3 @@ class TourModel(BaseModel):
     end: datetime.datetime = Field(..., description="Дата окончания")
     destination: str = Field(..., min_length=3, max_length=64, description="Место назначения")
     availability: int = Field(..., description="Количество доступных мест")
-
-
-

@@ -33,17 +33,20 @@ def auth_user(response: Response, user_data: models.UserAuthModel):
     access_token = create_access_token({"sub": str(user.id)})
     response.set_cookie(key="users_access_token", value=access_token, httponly=True)
 
+
 @router.post("/logout/", status_code=200)
 def logout_user(response: Response):
     response.delete_cookie(key="users_access_token")
+
 
 @router.get("/all_users/", status_code=200)
 def get_all_users(user_data: User = Depends(get_current_admin_user)) -> List[models.UserModel]:
     users = list(map(lambda obj: {"name": obj[0], "surname": obj[1], "email": obj[2]}, service.get_users(user_data.id)))
     return parse_obj_as(List[models.UserModel], users)
 
-@router.delete("/ban_user/", status_code=200)
-def ban_user(email_for_delete: EmailStr, user_data: User = Depends(get_current_admin_user)):
+
+@router.delete("/remove_user/", status_code=200)
+def remove_user(email_for_delete: EmailStr, user_data: User = Depends(get_current_admin_user)):
     service.delete_user(email_for_delete)
 
 
@@ -52,4 +55,18 @@ def add_tour(tour_data: models.TourModel, user: User = Depends(get_current_admin
     tour = service.get_tour_by_title(tour_data.title)
     if tour:
         raise errors.tour_already_exists()
+    tour_data.title = tour_data.title.lower()
+    tour_data.destination = tour_data.destination.lower()
     service.add_new_tour(tour_data.dict())
+
+
+@router.put("/update_tour/", status_code=200)
+def update_tour(title: str, update_data: models.TourModel, user_data: User = Depends(get_current_admin_user)):
+    update_data.title = update_data.title.lower()
+    update_data.destination = update_data.destination.lower()
+    service.update_tour(title, update_data.dict())
+
+
+@router.delete("/remove_tour/", status_code=200)
+def remove_tour(title: str, user_data: User = Depends(get_current_admin_user)):
+    service.delete_tour(title)
