@@ -9,7 +9,7 @@ import app.service as service
 import app.errors as errors
 
 from db.users import User
-from .dependencies import get_current_admin_user, get_current_user
+from .dependencies import get_current_admin_user, get_current_user, get_current_client_user
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
 
@@ -51,7 +51,7 @@ def remove_user(email_for_delete: EmailStr, user_data: User = Depends(get_curren
 
 
 @router.post("/add_booking/", status_code=200)
-def add_booking(number_of_people: int, tour_title: str, user_data: User = Depends(get_current_user)):
+def add_booking(number_of_people: int, tour_title: str, user_data: User = Depends(get_current_client_user)):
     tour = service.get_tour_by_title(tour_title)
     if tour is None or tour.availability < number_of_people:
         raise errors.tour_is_unavailable()
@@ -61,18 +61,51 @@ def add_booking(number_of_people: int, tour_title: str, user_data: User = Depend
     booking_data["status"] = "unconfirmed"
     booking_data["user_id"] = user_data.id
     booking_data["tour_id"] = tour.id
-    print(booking_data)
     service.add_booking(booking_data)
 
 
 @router.get("/all_bookings/", status_code=200)
 def all_bookings(user_data: User = Depends(get_current_admin_user)) -> List[models.BookModel]:
     bookings = list(
-        map(lambda b: {"tour": service.get_tour_by_id(b.tour_id).title, "user": service.get_user_by_id(b.user_id).email,
+        map(lambda b: {"id": b.id, "tour": service.get_tour_by_id(b.tour_id).title,
+                       "user": service.get_user_by_id(b.user_id).email,
                        "number_of_people": b.number_of_people, "total_price": b.total_price, "status": b.status},
-            service.get_bookings()))
+            service.get_all_bookings()))
     return parse_obj_as(List[models.BookModel], bookings)
 
+
+@router.get("/user_bookings/", status_code=200)
+def user_bookings(user_data: User = Depends(get_current_client_user())) -> List[models.BookModel]:
+    bookings = list(
+        map(lambda b: {"id": b.id, "tour": service.get_tour_by_id(b.tour_id).title,
+                       "user": service.get_user_by_id(b.user_id).email,
+                       "number_of_people": b.number_of_people, "total_price": b.total_price, "status": b.status},
+            service.get_user_bookings(user_data.id)))
+    return parse_obj_as(List[models.BookModel], bookings)
+
+
+@router.put("/confirmation_booking/", status_code=200)
+def confirmation_booking(booking_id: int, status: str, user_data: User = Depends(get_current_admin_user)):
+    service.confirmation_booking(booking_id, status)
+
+
+@router.put("/update_booking/", status_code=200)
+def update_booking(booking_id: int, number_of_people: int, tour_title: str,
+                   user_data: User = Depends(get_current_client_user)):
+    tour = service.get_tour_by_title(tour_title)
+    if tour is None or tour.availability < number_of_people:
+        raise errors.tour_is_unavailable()
+    booking_data = {}
+    booking_data["number_of_people"] = number_of_people
+    booking_data["total_price"] = tour.price * number_of_people
+    booking_data["status"] = "unconfirmed"
+    booking_data["user_id"] = user_data.id
+    booking_data["tour_id"] = tour.id
+    service.update_booking(booking_id, booking_data)
+
+@router.delete("/remove_booking/", status_code=200)
+def remove_booking(booking_id: int, user_data: User = Depends(get_current_user)):
+    service.delete_booking(booking_id)
 
 @router.post("/add_tour/", status_code=200)
 def add_tour(tour_data: models.TourModel, user: User = Depends(get_current_admin_user)):

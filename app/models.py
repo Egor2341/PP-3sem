@@ -34,6 +34,7 @@ class TourModel(BaseModel):
     availability: int = Field(..., description="Количество доступных мест")
 
 class BookModel(BaseModel):
+    id: int = Field(..., description="Номер бронирования")
     tour: str = Field(..., min_length=8, max_length=64, description="Название тура, от 8 до 64 символов")
     user: EmailStr = Field(..., description="Электронная почта")
     number_of_people: int = Field(..., description="Количество человек")
