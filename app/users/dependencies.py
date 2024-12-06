@@ -31,12 +31,16 @@ def get_current_user(token: str = Depends(get_token)):
 
     return user
 
-def get_current_admin_user(current_user: User = Depends(get_current_user)):
-    if current_user.role == "admin":
-        return current_user
-    raise access_is_denied()
 
 def get_current_client_user(current_user: User = Depends(get_current_user)):
     if current_user.role == "client":
         return current_user
     raise access_is_denied()
+
+
+def get_current_admin_user(current_user: User = Depends(get_current_user)):
+    if current_user.role == "admin":
+        return current_user
+    raise access_is_denied()
+
+

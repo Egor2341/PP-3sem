@@ -75,7 +75,7 @@ def all_bookings(user_data: User = Depends(get_current_admin_user)) -> List[mode
 
 
 @router.get("/user_bookings/", status_code=200)
-def user_bookings(user_data: User = Depends(get_current_client_user())) -> List[models.BookModel]:
+def user_bookings(user_data: User = Depends(get_current_client_user)) -> List[models.BookModel]:
     bookings = list(
         map(lambda b: {"id": b.id, "tour": service.get_tour_by_id(b.tour_id).title,
                        "user": service.get_user_by_id(b.user_id).email,
@@ -103,9 +103,11 @@ def update_booking(booking_id: int, number_of_people: int, tour_title: str,
     booking_data["tour_id"] = tour.id
     service.update_booking(booking_id, booking_data)
 
+
 @router.delete("/remove_booking/", status_code=200)
 def remove_booking(booking_id: int, user_data: User = Depends(get_current_user)):
     service.delete_booking(booking_id)
+
 
 @router.post("/add_tour/", status_code=200)
 def add_tour(tour_data: models.TourModel, user: User = Depends(get_current_admin_user)):
@@ -127,3 +129,49 @@ def update_tour(title: str, update_data: models.TourModel, user_data: User = Dep
 @router.delete("/remove_tour/", status_code=200)
 def remove_tour(title: str, user_data: User = Depends(get_current_admin_user)):
     service.delete_tour(title)
+
+
+@router.post("/add_review/", status_code=200)
+def add_review(data: models.AddReviewModel, user_data: User = Depends(get_current_client_user)):
+    review = {}
+    review["user_id"] = user_data.id
+    review["tour_id"] = service.get_tour_by_title(data.tour).id
+    review["rating"] = data.rating
+    review["comment"] = data.comment
+    service.new_review(review)
+
+
+@router.get("/all_reviews/", status_code=200)
+def all_reviews(data_user: User = Depends(get_current_admin_user)) -> List[models.GetReviewModel]:
+    reviews = service.get_all_reviews()
+    result = list(
+        map(lambda r: {"id": r.id, "tour": service.get_tour_by_id(r.tour_id).title,
+                       "name": service.get_user_by_id(r.user_id).name,
+                       "surname": service.get_user_by_id(r.user_id).surname, "rating": r.rating, "comment": r.comment},
+            reviews))
+    return parse_obj_as(List[models.GetReviewModel], result)
+
+
+@router.get("/user_reviews/", status_code=200)
+def user_reviews(data_user: User = Depends(get_current_client_user)) -> List[models.GetReviewModel]:
+    reviews = service.get_user_reviews(data_user.id)
+    user = service.get_user_by_id(data_user.id)
+    result = list(
+        map(lambda r: {"id": r.id, "tour": service.get_tour_by_id(r.tour_id).title,
+                       "name": user.name, "surname": user.surname, "rating": r.rating, "comment": r.comment}, reviews))
+    return parse_obj_as(List[models.GetReviewModel], result)
+
+
+@router.put("/update_review/", status_code=200)
+def update_review(old_comment: str, data: models.AddReviewModel, user_data: User = Depends(get_current_client_user)):
+    review = {}
+    review["user_id"] = user_data.id
+    review["tour_id"] = service.get_tour_by_title(data.tour).id
+    review["rating"] = data.rating
+    review["comment"] = data.comment
+    service.update_review(old_comment, review)
+
+
+@router.delete("/delete_review/", status_code=200)
+def delete_review(id: int, user_data: User = Depends(get_current_user)):
+    service.delete_review(id)

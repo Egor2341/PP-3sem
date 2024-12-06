@@ -3,6 +3,7 @@ from pydantic import EmailStr
 
 from db.bookings import Booking
 from db.database import session_factory
+from db.reviews import Review
 from db.users import User
 from db.tours import Tour
 
@@ -50,6 +51,7 @@ def get_tour_by_id(id: int):
     with session_factory() as session:
         return session.query(Tour).get(id)
 
+
 def get_tours():
     with session_factory() as session:
         return session.query(Tour).all()
@@ -92,13 +94,16 @@ def add_booking(data: dict):
         session.add(Booking(**data))
         session.commit()
 
+
 def get_all_bookings():
     with session_factory() as session:
         return session.query(Booking).all()
 
+
 def get_user_bookings(id: int):
     with session_factory() as session:
         return session.query(User).get(id).booking
+
 
 def confirmation_booking(id: int, status: str):
     with session_factory() as session:
@@ -117,6 +122,7 @@ def update_booking(id: int, data: dict):
         session.add(tour)
         session.commit()
 
+
 def delete_booking(id: int):
     with session_factory() as session:
         booking = session.query(Booking).get(id)
@@ -127,3 +133,35 @@ def delete_booking(id: int):
         session.commit()
 
 
+def new_review(data: dict):
+    with session_factory() as session:
+        session.add(Review(**data))
+        session.commit()
+
+
+def get_all_reviews():
+    with session_factory() as session:
+        return session.query(Review).all()
+
+
+def get_user_reviews(id: int):
+    with session_factory() as session:
+        return session.query(User).get(id).review
+
+
+def get_tour_review(title: str):
+    with session_factory() as session:
+        return session.query(Tour).filter_by(title=title).first().review
+
+
+def update_review(old_comment: str, data: dict):
+    with session_factory() as session:
+        session.query(Review).filter_by(comment=old_comment).update(data)
+        session.commit()
+
+
+def delete_review(id: int):
+    with session_factory() as session:
+        review = session.query(Review).get(id)
+        session.delete(review)
+        session.commit()

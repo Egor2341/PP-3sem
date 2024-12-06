@@ -3,7 +3,6 @@ from app.users.router import router as router_users
 from app.tours.router import router as router_tours
 import __init__
 
-
 app = FastAPI()
 
 

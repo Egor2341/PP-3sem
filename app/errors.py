@@ -22,3 +22,7 @@ def access_is_denied():
 def tour_is_unavailable():
     return HTTPException(status_code=404,
                          detail="Tour is unavailable")
+
+def not_found():
+    return HTTPException(status_code=404,
+                         detail="Not found")

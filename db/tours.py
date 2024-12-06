@@ -18,8 +18,9 @@ class Tour(Base):
     end: Mapped[datetime.datetime]
     destination: Mapped[str] = mapped_column(String(64))
     availability: Mapped[int]
-    booking: Mapped["Booking"] = relationship(uselist=False, back_populates="tour")
-    review: Mapped["Review"] = relationship(uselist=False, back_populates="tour")
+    booking: Mapped[list["Booking"]] = relationship(uselist=False, back_populates="tour")
+    review: Mapped[list["Review"]] = relationship(uselist=False, back_populates="tour")
+
 
 from db.bookings import Booking
 from db.reviews import Review

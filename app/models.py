@@ -40,3 +40,16 @@ class BookModel(BaseModel):
     number_of_people: int = Field(..., description="Количество человек")
     total_price: Decimal = Field(..., description="Общая стоимость")
     status: str = Field(..., description="Статус бронрования")
+
+class AddReviewModel(BaseModel):
+    tour: str = Field(..., min_length=8, max_length=64, description="Название тура, от 8 до 64 символов")
+    rating: int = Field(..., description="Оценка тура по 10-бальной шкале")
+    comment: str = Field(..., min_length=5, max_length=256, description="Текстовый комментарий")
+
+class GetReviewModel(BaseModel):
+    id: int = Field(..., description="Номер комментария")
+    name: str = Field(..., min_length=3, max_length=45, description="Имя, от 3 до 45 символов")
+    surname: str = Field(..., min_length=3, max_length=45, description="Фамилия, от 3 до 45 символов")
+    tour: str = Field(..., description="Название тура, от 8 до 64 символов")
+    rating: int = Field(..., description="Оценка тура по 10-бальной шкале")
+    comment: str = Field(..., min_length=5, max_length=256, description="Текстовый комментарий")
