@@ -28,7 +28,6 @@ def get_current_user(token: str = Depends(get_token)):
     user = get_user_by_id(int(user_id))
     if not user:
         raise invalid_user()
-
     return user
 
 
@@ -42,5 +41,3 @@ def get_current_admin_user(current_user: User = Depends(get_current_user)):
     if current_user.role == "admin":
         return current_user
     raise access_is_denied()
-
-

@@ -2,14 +2,13 @@ import datetime
 from typing import Annotated
 
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, mapped_column, Mapped
-from sqlalchemy import create_engine, text, Integer
+from sqlalchemy import create_engine, text
 from app.config import get_db_url
 
 engine = create_engine(
     url=get_db_url(),
     pool_pre_ping=True,
-    echo=True,
-
+    echo=False,
 )
 
 session_factory = sessionmaker(engine)
