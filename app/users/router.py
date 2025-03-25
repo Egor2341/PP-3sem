@@ -13,7 +13,7 @@ def register_user(user_data: models.UserRegisterModel):
     user = service.get_user_by_email(user_data.email)
     if user:
         raise errors.user_already_exists()
-    user_dict = user_data.dict()
+    user_dict = user_data.model_dump()
     user_dict['password'] = get_password_hash(user_data.password)
     user_dict['role'] = user_dict['role'].value
     service.add_new_user(user_dict)

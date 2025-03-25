@@ -7,6 +7,7 @@ import datetime
 class Role(enum.Enum):
     client = "client"
     admin = "admin"
+    
 class UserRegisterModel(BaseModel):
     name: str = Field(..., min_length=3, max_length=45, description="Имя, от 3 до 45 символов")
     surname: str = Field(..., min_length=3, max_length=45, description="Фамилия, от 3 до 45 символов")

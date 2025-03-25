@@ -4,6 +4,7 @@ from app.tours.router import router as router_tours
 from app.user_functional.router import router as router_funcs
 import __init__
 
+
 app = FastAPI()
 
 

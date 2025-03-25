@@ -18,8 +18,9 @@ class Settings(BaseSettings):
 settings = Settings()
 
 
+
 def get_db_url():
-    return f"postgresql+psycopg://{settings.DB_USER}:{settings.DB_PASS}@{settings.DB_HOST}/{settings.DB_NAME}"
+    return f"postgresql+psycopg://{settings.DB_USER}:{settings.DB_PASS}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 
 
 def get_auth_data():

@@ -8,6 +8,8 @@ from db.users import User
 from db.tours import Tour
 
 
+
+
 def get_user_by_id(id: int):
     with session_factory() as session:
         return session.query(User).get(id)
