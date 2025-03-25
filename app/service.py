@@ -3,6 +3,7 @@ from pydantic import EmailStr
 
 from db.bookings import Booking
 from db.database import session_factory
+from sqlalchemy import select
 from db.reviews import Review
 from db.users import User
 from db.tours import Tour
@@ -12,7 +13,8 @@ from db.tours import Tour
 
 def get_user_by_id(id: int):
     with session_factory() as session:
-        return session.query(User).get(id)
+        return session.get(User, id)
+
 
 
 def get_user_by_email(email: EmailStr):
@@ -67,7 +69,7 @@ def update_tour(title: str, update_data: dict):
 
 def delete_tour(title: str):
     with session_factory() as session:
-        tour = session.query(Tour).filter_by(title=title).first()
+        tour = session.query(Tour).filter_by(title=title).one()
         session.delete(tour)
         session.commit()
 

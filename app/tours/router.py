@@ -5,7 +5,7 @@ from fastapi import APIRouter
 
 from app.service import get_tours, get_filtered_tours, get_tour_review, get_user_by_id
 
-from pydantic import parse_obj_as
+from pydantic import parse_obj_as, TypeAdapter
 
 from app.models import TourModel, GetReviewModel
 
@@ -20,7 +20,7 @@ def get_all_tours() -> list[TourModel]:
         map(lambda t: {"title": t.title, "description": t.description, "price": t.price, "duration": t.duration,
                        "start": t.start, "end": t.end, "destination": t.destination, "availability": t.availability},
             get_tours()))
-    return parse_obj_as(list[TourModel], tours)
+    return TypeAdapter(list[TourModel]).validate_python(tours)
 
 
 @router.get("/filter_tours", status_code=200)
@@ -30,7 +30,7 @@ def filter_tours(title: Optional[str] = None, price: Optional[Decimal] = None, d
         map(lambda t: {"title": t.title, "description": t.description, "price": t.price, "duration": t.duration,
                        "start": t.start, "end": t.end, "destination": t.destination, "availability": t.availability},
             get_filtered_tours(title, price, duration, destination, number_of_peoples)))
-    return parse_obj_as(list[TourModel], tours)
+    return TypeAdapter(list[TourModel]).validate_python(tours)
 
 
 @router.get("/tour_reviews", status_code=200)

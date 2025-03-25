@@ -1,7 +1,7 @@
 import datetime
 from typing import Annotated
 
-from sqlalchemy.orm import sessionmaker, DeclarativeBase, mapped_column, Mapped
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, mapped_column, Mapped, Session
 from sqlalchemy import create_engine, text
 from app.config import get_db_url
 
@@ -11,12 +11,13 @@ engine = create_engine(
     echo=False,
 )
 
-session_factory = sessionmaker(engine)
+def session_factory():
+    return Session(engine)
 
 intpk = Annotated[int, mapped_column(primary_key=True)]
 created_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
 updated_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"),
-                                                        onupdate=datetime.datetime.utcnow)]
+                                                        onupdate=datetime.datetime.now(datetime.UTC))]
 
 
 class Base(DeclarativeBase):

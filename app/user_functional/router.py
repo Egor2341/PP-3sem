@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import Depends, APIRouter
 from pydantic import parse_obj_as, EmailStr
+from pydantic import TypeAdapter
 
 from db.users import User
 from .dependencies import get_current_admin_user, get_current_user, get_current_client_user
@@ -11,7 +12,7 @@ router = APIRouter(prefix='/funcs', tags=['Funcs'])
 @router.get("/all_users/", status_code=200)
 def get_all_users(user_data: User = Depends(get_current_admin_user)) -> List[models.UserModel]:
     users = list(map(lambda obj: {"name": obj[0], "surname": obj[1], "email": obj[2]}, service.get_users(user_data.id)))
-    return parse_obj_as(List[models.UserModel], users)
+    return TypeAdapter(List[models.UserModel]).validate_python(users)
 
 
 @router.delete("/remove_user/", status_code=200)
@@ -85,19 +86,19 @@ def add_tour(tour_data: models.TourModel, user: User = Depends(get_current_admin
         raise errors.tour_already_exists()
     tour_data.title = tour_data.title.lower()
     tour_data.destination = tour_data.destination.lower()
-    service.add_new_tour(tour_data.dict())
+    service.add_new_tour(tour_data.model_dump())
 
 
 @router.put("/update_tour/", status_code=200)
 def update_tour(title: str, update_data: models.TourModel, user_data: User = Depends(get_current_admin_user)):
     update_data.title = update_data.title.lower()
     update_data.destination = update_data.destination.lower()
-    service.update_tour(title, update_data.dict())
+    service.update_tour(title, update_data.model_dump())
 
 
 @router.delete("/remove_tour/", status_code=200)
 def remove_tour(title: str, user_data: User = Depends(get_current_admin_user)):
-    service.delete_tour(title)
+    service.delete_tour(title.lower())
 
 
 @router.post("/add_review/", status_code=200)
