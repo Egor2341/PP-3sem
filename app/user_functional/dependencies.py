@@ -3,7 +3,7 @@ from fastapi import Request, Depends
 from app.config import get_auth_data
 from jose import jwt, JWTError
 
-from app.service import get_user_by_id
+from app.services.service import get_by_id
 from db.users import User
 
 
@@ -25,7 +25,7 @@ def get_current_user(token: str = Depends(get_token)):
     if not user_id:
         raise invalid_user()
 
-    user = get_user_by_id(int(user_id))
+    user = get_by_id(User, int(user_id))
     if not user:
         raise invalid_user()
     return user

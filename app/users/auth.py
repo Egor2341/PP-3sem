@@ -6,7 +6,7 @@ from pydantic import EmailStr
 
 from app.config import get_auth_data
 
-from app.service import get_user_by_email
+from app.services.user_service import get_user_by_email
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

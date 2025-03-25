@@ -2,21 +2,22 @@ from fastapi import APIRouter, Response
 
 from app.users.auth import get_password_hash, authenticate_user, create_access_token
 import app.models as models
-import app.service as service
+from app.services import service, user_service
 import app.errors as errors
+from db.users import User
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
 
 
 @router.post("/register/", status_code=200)
 def register_user(user_data: models.UserRegisterModel):
-    user = service.get_user_by_email(user_data.email)
+    user = user_service.get_user_by_email(user_data.email)
     if user:
         raise errors.user_already_exists()
     user_dict = user_data.model_dump()
     user_dict['password'] = get_password_hash(user_data.password)
     user_dict['role'] = user_dict['role'].value
-    service.add_new_user(user_dict)
+    service.add_new_row(User, user_dict)
 
 
 @router.post("/login/", status_code=200)
